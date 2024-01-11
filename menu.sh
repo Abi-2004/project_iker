@@ -15,7 +15,77 @@ menu() {
     echo "5. Salir"
 }
 
+euroalmi() {
+    clear
+    echo "EuroAlmi: Rellenar boleto de Euromillón"
 
+    read -p "¿Quieres introducir tus propios números y estrellas? (S/N): " choice
+
+    if [ "$choice" == "S" ] || [ "$choice" == "s" ]; then
+        read -p "Introduce 5 números (del 1 al 50) separados por espacios: " -a numeros
+        read -p "Introduce 2 estrellas (del 1 al 12) separadas por espacios: " -a estrellas
+    else
+        # Generar números aleatorios
+        numeros=($(shuf -i 1-50 -n 5))
+        estrellas=($(shuf -i 1-12 -n 2))
+    fi
+
+    # Validar números y estrellas
+    for num in "${numeros[@]}" "${estrellas[@]}"; do
+        if ! [[ "$num" =~ ^[0-9]+$ ]]; then
+            echo "Error: Introduce solo números válidos."
+            return
+        fi
+    done
+
+    echo -e "\nNúmeros seleccionados: ${numeros[@]}"
+    echo "Estrellas seleccionadas: ${estrellas[@]}"
+
+    # Números premiados (simulación)
+    numeros_premiados=($(shuf -i 1-50 -n 5))
+    estrellas_premiadas=($(shuf -i 1-12 -n 2))
+
+    echo -e "\nNúmeros premiados: ${numeros_premiados[@]}"
+    echo "Estrellas premiadas: ${estrellas_premiadas[@]}"
+
+    # Calcular aciertos
+    aciertos_numeros=($(comm -12 <(printf "%s\n" "${numeros[@]}" | sort) <(printf "%s\n" "${numeros_premiados[@]}" | sort)))
+    aciertos_estrellas=($(comm -12 <(printf "%s\n" "${estrellas[@]}" | sort) <(printf "%s\n" "${estrellas_premiadas[@]}" | sort)))
+
+    echo -e "\nAciertos en números: ${aciertos_numeros[@]}"
+    echo "Aciertos en estrellas: ${aciertos_estrellas[@]}"
+
+    total_aciertos=$((${#aciertos_numeros[@]} + ${#aciertos_estrellas[@]}))
+
+    echo -e "\nTotal de aciertos: $total_aciertos"
+
+    # Premios (simulación)
+    case $total_aciertos in
+        0)
+            echo "No has acertado ningún número ni estrella. ¡Suerte la próxima vez!"
+            ;;
+        1|2)
+            echo "¡Has ganado un premio pequeño!"
+            ;;
+        3|4)
+            echo "¡Felicidades! Has ganado un premio moderado."
+            ;;
+        5|6)
+            echo "¡Increíble! Has ganado un gran premio."
+            ;;
+        *)
+            echo "¡Enhorabuena! Has ganado el premio máximo."
+            ;;
+    esac
+
+    read -p "¿Quieres jugar otro boleto? (S/N): " jugar_otro
+
+    if [ "$jugar_otro" == "S" ] || [ "$jugar_otro" == "s" ]; then
+        euroalmi
+    else
+        echo "¡Gracias por jugar al EuroMillón!"
+    fi
+}
 
 cambiar(){
 
